@@ -1,6 +1,8 @@
 import socket
 import threading
 from protocol import JSONSocket, clear_screen
+from cryptography.fernet import Fernet
+from cryptography.hazmat.primitives.asymmetric import rsa
 
 clear_screen()
 
@@ -21,8 +23,8 @@ except ConnectionRefusedError:
     print("Connection Refused. Server Is Likely Closed")
 except ConnectionError:
     print("Connection Error")
-except:
-    print("Unknown Error")
+except Exception as e:
+    print("Unknown Error", e)
 
 current_input = ""
 
@@ -33,7 +35,7 @@ def receive():
             print("\rDisconnected")
             break
         if data["type"] == "message":
-            print(f"\r\033[K{data['user']}: {data['content']}")
+            print(f"\r\033[K{data['user']}: {(data["content"])}")
             print(f"Message: {current_input}", end="", flush=True)
         elif data["type"] == "system":
             print(data["content"])
@@ -49,7 +51,7 @@ def send():
             data = {
                 "type": "message",
                 "user": username,
-                "content": current_input
+                "content": (current_input)
             }
             print(f"\033[A\r\033[K{username}: {current_input}")
             connection.send(data)

@@ -25,16 +25,17 @@ def handleClient(connection, addr):
         if not data:
             break
         if data["type"] == "message":
+            print(data["content"]) #testing purposes (delete after)
             broadcast(data, connection)
         elif data["type"] == "join":
             broadcast({
                 "type": "system",
-                "content": f"\r\033[K{data["user"]} joined the room"
+                "content": f"\r\033[K{data['user']} joined the room"
             }, connection)
         elif data["type"] == "leave":
             broadcast({
                 "type": "system",
-                "content": f"\r\033[K{data["user"]} left the room"
+                "content": f"\r\033[K{data['user']} left the room"
             }, connection)
             print(f"User disconnected from {addr}")
     clients.remove(connection)
@@ -43,9 +44,12 @@ def handleClient(connection, addr):
 def acceptClients():
     while True:
         try:
+            if len(clients) >= 10:
+                print("\nClient Cant Connect. Server Is Full")
+                break
             client, addr = server.accept()
         except KeyboardInterrupt:
-            print("\Server Connection Ended")
+            print("\nServer Connection Ended")
             break
         except Exception as e:
             print("Disconnected:", e)
